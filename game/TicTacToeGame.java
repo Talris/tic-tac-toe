@@ -1,3 +1,5 @@
+package game;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -166,7 +168,7 @@ public class TicTacToeGame implements ActionListener{
         BufferedReader br = null;
 
         try {
-            br = new BufferedReader(new FileReader(Reader.statFile));
+            br = new BufferedReader(new FileReader(Main.statFile));
             String line = null;
 
             while ((line = br.readLine()) != null) {
@@ -194,7 +196,7 @@ public class TicTacToeGame implements ActionListener{
         int n = 0;
         try {
 
-            Scanner sc = new Scanner(Reader.statFile);
+            Scanner sc = new Scanner(game.Main.statFile);
             while (sc.hasNext()) {
                 String s = sc.next();
                 // System.out.println(sc.next());
@@ -463,7 +465,7 @@ public class TicTacToeGame implements ActionListener{
         }
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(Reader.statFile)));
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(Main.statFile)));
             pw.format("wins = %d%n" +
                     "losses = %d%n" +
                     "ties = %d", wins, losses, ties);

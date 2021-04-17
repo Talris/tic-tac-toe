@@ -1,3 +1,5 @@
+package game;
+
 import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,7 +13,7 @@ import java.io.PrintWriter;
  * Time: 16:31
  * To change this template use File | Settings | File Templates.
  */
-public class Reader {
+public class Main {
     // statistic file path
     static String path = "/media/talry/ACER/Documents and Settings/Пользователь/" +
             "Мои документы/java/Проекты/IdeaProjects/TicTacToe/src/Statistic.txt";
