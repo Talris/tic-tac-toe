@@ -448,20 +448,22 @@ public class TicTacToeGame implements ActionListener{
             duplicateClics[i] = 0;
         }
 
-        if (winner.equals("X")) {
-            score.setText("You won!");
-            wins++;
-            winStatLbl.setText("Wins: " + wins + ";");
-        }
-        else if (winner.equals("O")) {
-            score.setText("You lost!");
-            losses++;
-            lossStatLbl.setText("Losses: " + losses + ";");
-        }
-        else if (winner.equals("T")) {
-            score.setText("It`s a tie!");
-            ties++;
-            tieStatLbl.setText("Ties: " + ties + "." );
+        switch (winner) {
+            case "X":
+                score.setText("You won!");
+                wins++;
+                winStatLbl.setText("Wins: " + wins + ";");
+                break;
+            case "O":
+                score.setText("You lost!");
+                losses++;
+                lossStatLbl.setText("Losses: " + losses + ";");
+                break;
+            case "T":
+                score.setText("It`s a tie!");
+                ties++;
+                tieStatLbl.setText("Ties: " + ties + ".");
+                break;
         }
         PrintWriter pw = null;
         try {
