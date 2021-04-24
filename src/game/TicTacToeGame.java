@@ -20,8 +20,15 @@ public class TicTacToeGame implements ActionListener{
     Button[] squares;
     int [] duplicateClics;
     JButton newGameButton;
+
+    JRadioButton weaponX;
+    JRadioButton weaponO;
+    String playerWeapon = "";
+    String compWeapon = "";
+
     JLabel score;
     int emptySquaresLeft = 9;
+
     int wins = readStatFile("wins");
     int losses = readStatFile("losses");
     int ties = readStatFile("ties");
@@ -35,7 +42,7 @@ public class TicTacToeGame implements ActionListener{
             duplicateClics[i] = 0;
         }
         JPanel root = new JPanel(new BorderLayout());
-        root.setPreferredSize(new Dimension(350, 400));
+        root.setPreferredSize(new Dimension(350, 450));
 
 
         Font font =  new Font("Monospased", Font.BOLD, 24);
@@ -45,9 +52,38 @@ public class TicTacToeGame implements ActionListener{
         newGameButton.setFont(font);
         newGameButton.addActionListener(this);
 
-        JPanel topPanel = new JPanel();
-        topPanel.add(newGameButton, BorderLayout.CENTER);
-        topPanel.setBorder(new EmptyBorder(15, 100, 15, 100));
+        JPanel settings = new JPanel();//new GridLayout(3, 1, 0, 0));
+        GridBagLayout gridbag = new GridBagLayout();
+        //GridBagConstraints gbc = new GridBagConstraints();
+        settings.setLayout(gridbag);
+
+
+        //FlowLayout fl = new FlowLayout(FlowLayout.CENTER, 50, 0);
+
+        //JPanel selectWeaponPanel = new JPanel(fl);
+        //JPanel weaponLblPanel = new JPanel(fl);
+        JLabel weaponLbl = new JLabel("Select your weapon:");
+        weaponX = new JRadioButton("X", true);
+        weaponO = new JRadioButton("O");
+        weaponX.addActionListener(this);
+        weaponO.addActionListener(this);
+
+        settings.add(weaponLbl, new GridBagConstraints(0, 0, 3, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(10, 0, 0, 0), 0, 0));
+
+        settings.add(weaponX, new GridBagConstraints(2, 1, 1, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 0, 0, 100), 0, 0));
+
+        settings.add(weaponO, new GridBagConstraints(0, 1, 1, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 100, 0, 0), 0, 0));
+        // Insets(int top, int left, int bottom, int right)
+        settings.add(newGameButton, new GridBagConstraints(0, 2, 3, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(10, 0, 10, 0), 0, 0));
+
 
         score = new JLabel("Your turn");
         score.setFont(font);
@@ -81,9 +117,8 @@ public class TicTacToeGame implements ActionListener{
         statPanel.add(tieStatLbl);
         infoPanel.add(statPanel, BorderLayout.SOUTH);
 
-        root.add(topPanel, BorderLayout.NORTH);
+        root.add(settings, BorderLayout.NORTH);
         root.add(gameBoard, BorderLayout.CENTER);
-        // root.add(score, BorderLayout.SOUTH);
         root.add(infoPanel, BorderLayout.SOUTH);
 
         return root;
@@ -95,6 +130,23 @@ public class TicTacToeGame implements ActionListener{
             String winner = "";
 
             Object src = evt.getSource();
+
+            if (src == weaponO) {
+                weaponX.setSelected(false);
+                weaponO.setSelected(true);
+
+            } else if (src == weaponX) {
+                weaponX.setSelected(true);
+                weaponO.setSelected(false);
+            }
+
+            if (weaponO.isSelected()) {
+                playerWeapon = "O";
+                compWeapon = "X";
+            } else {
+                playerWeapon = "X";
+                compWeapon = "O";
+            }
 
             if (src == newGameButton) {
                 newGameButton.setEnabled(false);
@@ -109,9 +161,11 @@ public class TicTacToeGame implements ActionListener{
 
             for (int i = 0; i < 9; i++) {
                 if (src == squares[i]) {
+                    weaponO.setEnabled(false);
+                    weaponX.setEnabled(false);
                     if (duplicateClics[i] == 0) {
                         duplicateClics[i] = 1;
-                        squares[i].setLabel("X");
+                        squares[i].setLabel(playerWeapon);
 
                         winner = lookForWinner();
 
@@ -239,10 +293,10 @@ public class TicTacToeGame implements ActionListener{
     private void computerMove() {
 
         int selectedSquare;
-        selectedSquare = findEmptySquare("O");
+        selectedSquare = findEmptySquare(compWeapon);
 
         if (selectedSquare == -1) {
-            selectedSquare = findEmptySquare("X");
+            selectedSquare = findEmptySquare(playerWeapon);
         }
         if (selectedSquare == -1 && squares[4].getLabel().equals("")) {
             selectedSquare = 4;
@@ -250,7 +304,7 @@ public class TicTacToeGame implements ActionListener{
         if (selectedSquare == -1) {
             selectedSquare = randomeSquare();
         }
-        squares[selectedSquare].setLabel("O");
+        squares[selectedSquare].setLabel(compWeapon);
         duplicateClics[selectedSquare] = 1;
     }
 
@@ -275,15 +329,15 @@ public class TicTacToeGame implements ActionListener{
         int[] weight = new int[9];
 
         for (int i = 0; i < 9; i++) {
-            if (squares[i].getLabel().equals("O")) {
+            if (squares[i].getLabel().equals(compWeapon)) {
                 weight[i] = -1;
-            } else if (squares[i].getLabel().equals("X")) {
+            } else if (squares[i].getLabel().equals(playerWeapon)) {
                 weight[i] = 1;
             } else {
                 weight[i] = 0;
             }
         }
-        int twoWeights = player.equals("O") ? -2 : 2;
+        int twoWeights = player.equals(compWeapon) ? -2 : 2;
 
         //top row
         if (weight[0] + weight[1] + weight[2] == twoWeights) {
@@ -430,7 +484,7 @@ public class TicTacToeGame implements ActionListener{
     }
 
     private void highlitedWinner(String winner, int a1, int a2, int a3) {
-        if (winner.equals("X")) {
+        if (winner.equals(playerWeapon)) {
             squares[a1].setBackground(Color.GREEN);
             squares[a2].setBackground(Color.GREEN);
             squares[a3].setBackground(Color.GREEN);
@@ -443,27 +497,29 @@ public class TicTacToeGame implements ActionListener{
 
     private void endTheGame(String winner) {
         newGameButton.setEnabled(true);
+        weaponO.setEnabled(true);
+        weaponX.setEnabled(true);
+
         for (int i = 0; i < 9; i++) {
             squares[i].setEnabled(false);
             duplicateClics[i] = 0;
         }
 
-        switch (winner) {
-            case "X":
-                score.setText("You won!");
-                wins++;
-                winStatLbl.setText("Wins: " + wins + ";");
-                break;
-            case "O":
-                score.setText("You lost!");
-                losses++;
-                lossStatLbl.setText("Losses: " + losses + ";");
-                break;
-            case "T":
-                score.setText("It`s a tie!");
-                ties++;
-                tieStatLbl.setText("Ties: " + ties + ".");
-                break;
+        if (winner.equals(playerWeapon)) {
+            score.setText("You won!");
+            wins++;
+            winStatLbl.setText("Wins: " + wins + ";");
+
+        } else if (winner.equals(compWeapon)) {
+            score.setText("You lost!");
+            losses++;
+            lossStatLbl.setText("Losses: " + losses + ";");
+
+        } else if (winner.equals("T")) {
+            score.setText("It`s a tie!");
+            ties++;
+            tieStatLbl.setText("Ties: " + ties + ".");
+
         }
         PrintWriter pw = null;
         try {
