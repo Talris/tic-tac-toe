@@ -1,7 +1,6 @@
 package game;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,8 +25,14 @@ public class TicTacToeGame implements ActionListener{
     String playerWeapon = "";
     String compWeapon = "";
 
+    JRadioButton playerFirst;
+    JRadioButton compFirst;
+    JRadioButton randomFirst;
+    String playerTurn = "Your turn!";
+    String compTurn = "Computer`s turn!";
+
     JLabel score;
-    int emptySquaresLeft = 9;
+    int emptySquaresLeft;
 
     int wins = readStatFile("wins");
     int losses = readStatFile("losses");
@@ -42,50 +47,69 @@ public class TicTacToeGame implements ActionListener{
             duplicateClics[i] = 0;
         }
         JPanel root = new JPanel(new BorderLayout());
-        root.setPreferredSize(new Dimension(350, 450));
+        root.setPreferredSize(new Dimension(320, 500));
 
 
         Font font =  new Font("Monospased", Font.BOLD, 24);
 
         newGameButton = new JButton("New game");
-        newGameButton.setEnabled(false);
+        newGameButton.setEnabled(true);
         newGameButton.setFont(font);
         newGameButton.addActionListener(this);
 
-        JPanel settings = new JPanel();//new GridLayout(3, 1, 0, 0));
+        JPanel settings = new JPanel();
         GridBagLayout gridbag = new GridBagLayout();
-        //GridBagConstraints gbc = new GridBagConstraints();
+
         settings.setLayout(gridbag);
 
-
-        //FlowLayout fl = new FlowLayout(FlowLayout.CENTER, 50, 0);
-
-        //JPanel selectWeaponPanel = new JPanel(fl);
-        //JPanel weaponLblPanel = new JPanel(fl);
         JLabel weaponLbl = new JLabel("Select your weapon:");
         weaponX = new JRadioButton("X", true);
         weaponO = new JRadioButton("O");
         weaponX.addActionListener(this);
         weaponO.addActionListener(this);
 
-        settings.add(weaponLbl, new GridBagConstraints(0, 0, 3, 1,
+        JLabel firstTurn = new JLabel("Select who make first turn:");
+        playerFirst = new JRadioButton("You", true);
+        compFirst = new JRadioButton("Computer");
+        randomFirst = new JRadioButton("Randomly");
+        playerFirst.addActionListener(this);
+        compFirst.addActionListener(this);
+        randomFirst.addActionListener(this);
+
+        settings.add(weaponLbl, new GridBagConstraints(0, 0, 5, 1,
                 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 0, 0), 0, 0));
 
-        settings.add(weaponX, new GridBagConstraints(2, 1, 1, 1,
+        settings.add(weaponX, new GridBagConstraints(1, 1, 1, 1,
                 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(5, 0, 0, 100), 0, 0));
+                new Insets(5, 0, 0, 0), 0, 0));
 
-        settings.add(weaponO, new GridBagConstraints(0, 1, 1, 1,
+        settings.add(weaponO, new GridBagConstraints(3, 1, 1, 1,
                 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(5, 100, 0, 0), 0, 0));
-        // Insets(int top, int left, int bottom, int right)
-        settings.add(newGameButton, new GridBagConstraints(0, 2, 3, 1,
+                new Insets(5, 0, 0, 0), 0, 0));
+
+        settings.add(firstTurn, new GridBagConstraints(0, 2, 5, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 0, 0, 0), 0, 0));
+
+        settings.add(playerFirst, new GridBagConstraints(2, 3, 1, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 0, 0, 0), 0, 0));
+
+        settings.add(compFirst, new GridBagConstraints(0, 3, 1, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 0, 0, 0), 0, 0));
+
+        settings.add(randomFirst, new GridBagConstraints(4, 3, 1, 1,
+                1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 0, 0, 0), 0, 0));
+
+        settings.add(newGameButton, new GridBagConstraints(0, 4, 5, 1,
                 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 10, 0), 0, 0));
+        // Insets(int top, int left, int bottom, int right)
 
-
-        score = new JLabel("Your turn");
+        score = new JLabel(" ");
         score.setFont(font);
         // JLabel p1 = new JLabel("player 1");
         // JLabel p2 = new JLabel("player 2");
@@ -101,7 +125,7 @@ public class TicTacToeGame implements ActionListener{
             squares[i].setBackground(Color.orange);
             squares[i].setFont(new Font("Monospased", Font.BOLD, 90));
             squares[i].setLabel("");
-
+            squares[i].setEnabled(false);
             gameBoard.add(squares[i]);
         }
         JPanel infoPanel = new JPanel(new BorderLayout());
@@ -148,21 +172,51 @@ public class TicTacToeGame implements ActionListener{
                 compWeapon = "O";
             }
 
+            if (src == playerFirst) {
+                playerFirst.setSelected(true);
+                compFirst.setSelected(false);
+                randomFirst.setSelected(false);
+
+            } else if (src == compFirst) {
+                playerFirst.setSelected(false);
+                compFirst.setSelected(true);
+                randomFirst.setSelected(false);
+
+            } else if (src == randomFirst) {
+                playerFirst.setSelected(false);
+                compFirst.setSelected(false);
+                randomFirst.setSelected(true);
+            }
+
             if (src == newGameButton) {
+                emptySquaresLeft = 9;
                 newGameButton.setEnabled(false);
-                score.setText("Your turn!");
                 for (int i = 0; i < 9; i++) {
                     squares[i].setEnabled(true);
                     squares[i].setLabel("");
                     squares[i].setBackground(Color.orange);
                 }
-                emptySquaresLeft = 9;
+                weaponO.setEnabled(false);
+                weaponX.setEnabled(false);
+                playerFirst.setEnabled(false);
+                compFirst.setEnabled(false);
+                randomFirst.setEnabled(false);
+
+                int selectedTurn = -1;
+                if (randomFirst.isSelected()) {
+                    selectedTurn = randomFirstTurn();
+                    //System.out.println(selectedTurn);
+                }
+                if (compFirst.isSelected() || selectedTurn == 0) {
+                    computerMove();
+                    emptySquaresLeft--;
+                }
+                score.setText(playerTurn);
             }
 
             for (int i = 0; i < 9; i++) {
                 if (src == squares[i]) {
-                    weaponO.setEnabled(false);
-                    weaponX.setEnabled(false);
+
                     if (duplicateClics[i] == 0) {
                         duplicateClics[i] = 1;
                         squares[i].setLabel(playerWeapon);
@@ -172,7 +226,7 @@ public class TicTacToeGame implements ActionListener{
                         if (!winner.equals("")) {
                             endTheGame(winner);
                         } else {
-                            score.setText("Computer`s turn!");
+                            score.setText(compTurn);
                             computurMoveThread();
                         }
                         break;
@@ -186,6 +240,13 @@ public class TicTacToeGame implements ActionListener{
         }
     }
 
+    private int randomFirstTurn() {
+        Random rd = new Random();
+
+        return rd.nextInt(100) % 2;
+    }
+
+
     private void computurMoveThread() {
         SwingWorker sw = new SwingWorker() {
             @Override
@@ -198,10 +259,8 @@ public class TicTacToeGame implements ActionListener{
                     score.setText(winner);
                     endTheGame(winner);
                 } else {
-                    String turn;
-                    turn = "Your turn!";
                     // System.out.println("chng turn");
-                    publish(turn);
+                    publish(playerTurn);
                 }
                 return null;
             }
@@ -302,13 +361,13 @@ public class TicTacToeGame implements ActionListener{
             selectedSquare = 4;
         }
         if (selectedSquare == -1) {
-            selectedSquare = randomeSquare();
+            selectedSquare = randomSquare();
         }
         squares[selectedSquare].setLabel(compWeapon);
         duplicateClics[selectedSquare] = 1;
     }
 
-    private int randomeSquare() {
+    private int randomSquare() {
         int selectedSquare = -1;
         boolean isEmptySquare = false;
 
@@ -428,7 +487,7 @@ public class TicTacToeGame implements ActionListener{
         String winner = "";
         emptySquaresLeft--;
         if (emptySquaresLeft == 0) {
-            return  "T";
+            winner = "T";
         }
         // top row
         if (!squares[0].getLabel().equals("") &&
@@ -499,6 +558,9 @@ public class TicTacToeGame implements ActionListener{
         newGameButton.setEnabled(true);
         weaponO.setEnabled(true);
         weaponX.setEnabled(true);
+        playerFirst.setEnabled(true);
+        compFirst.setEnabled(true);
+        randomFirst.setEnabled(true);
 
         for (int i = 0; i < 9; i++) {
             squares[i].setEnabled(false);
@@ -541,5 +603,4 @@ public class TicTacToeGame implements ActionListener{
             }
         }
     }
-
 }
