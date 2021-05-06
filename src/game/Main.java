@@ -19,6 +19,8 @@ public class Main {
             "Мои документы/java/Проекты/IdeaProjects/TicTacToe/src/Statistic.txt";
     static File statFile;
 
+    static JFrame frame;
+
     public static void createLookAndFeel() {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -56,7 +58,7 @@ public class Main {
     public static void createGui() {
         createLookAndFeel();
         prepareFile();
-        JFrame frame = new JFrame("Tic-Tac-Toe");
+        frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         TicTacToeGame comp = new TicTacToeGame();
 
